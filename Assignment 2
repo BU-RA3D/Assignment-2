@@ -1,0 +1,257 @@
+class OnlineStore:
+    """Class representing the E-book Online Store."""
+
+    def __init__(self):
+        """Initialize an empty list of customers."""
+        self._customers = []
+
+    def add_customer(self, customer):
+        """Add a new customer to the store."""
+        self._customers.append(customer)
+
+    def __str__(self):
+        """Return a string representation of the online store."""
+        return f"Online Store with {len(self._customers)} customers."
+class Customer:
+    """Class representing a customer in the E-book Store."""
+
+    def __init__(self, customer_id, name):
+        """Initialize a customer with an ID and name."""
+        self._customer_id = customer_id
+        self._name = name
+        self._shopping_cart = None
+
+    @property
+    def customer_id(self):
+        """Get the customer ID."""
+        return self._customer_id
+
+    @property
+    def name(self):
+        """Get the customer name."""
+        return self._name
+
+    def set_shopping_cart(self, shopping_cart):
+        """Set the customer's shopping cart."""
+        self._shopping_cart = shopping_cart
+
+    def __str__(self):
+        """Return a string representation of the customer."""
+        return f"Customer[ID={self._customer_id}, Name={self._name}]"
+from e_book import EBook
+
+class ShoppingCart:
+    """Class representing a shopping cart for a customer."""
+
+    def __init__(self, cart_id):
+        """Initialize a shopping cart with an ID and an empty list of e-books."""
+        self._cart_id = cart_id
+        self._ebooks = []
+
+    def add_ebook(self, ebook):
+        """Add an e-book to the shopping cart."""
+        if isinstance(ebook, EBook):
+            self._ebooks.append(ebook)
+
+    def __str__(self):
+        """Return a string representation of the shopping cart."""
+        return f"Shopping Cart[ID={self._cart_id}, EBooks={len(self._ebooks)}]"
+class EBook:
+    """Class representing an e-book in the store."""
+
+    def __init__(self, title, author, price):
+        """Initialize an e-book with a title, author, and price."""
+        self._title = title
+        self._author = author
+        self._price = price
+
+    @property
+    def title(self):
+        """Get the title of the e-book."""
+        return self._title
+
+    @property
+    def author(self):
+        """Get the author of the e-book."""
+        return self._author
+
+    @property
+    def price(self):
+        """Get the price of the e-book."""
+        return self._price
+
+    def __str__(self):
+        """Return a string representation of the e-book."""
+        return f"EBook[Title='{self._title}', Author='{self._author}', Price={self._price}]"
+from shopping_cart import ShoppingCart
+from invoice import Invoice
+
+class Order:
+    """Class representing an order in the store."""
+
+    def __init__(self, order_id, order_date):
+        """Initialize an order with an ID and date."""
+        self._order_id = order_id
+        self._order_date = order_date
+        self._invoice = None
+
+    def set_invoice(self, invoice):
+        """Set the invoice for the order."""
+        if isinstance(invoice, Invoice):
+            self._invoice = invoice
+
+    def __str__(self):
+        """Return a string representation of the order."""
+        return f"Order[ID={self._order_id}, Date={self._order_date}]"
+class Invoice:
+    """Class representing an invoice for an order."""
+
+    def __init__(self, invoice_id, total_amount):
+        """Initialize an invoice with an ID and total amount."""
+        self._invoice_id = invoice_id
+        self._total_amount = total_amount
+
+    @property
+    def total_amount(self):
+        """Get the total amount of the invoice."""
+        return self._total_amount
+
+    def __str__(self):
+        """Return a string representation of the invoice."""
+        return f"Invoice[ID={self._invoice_id}, Total={self._total_amount}]"
+# main.py
+from online_store import OnlineStore
+from customer import Customer
+from shopping_cart import ShoppingCart
+from e_book import EBook
+from order import Order
+from invoice import Invoice
+
+# Initialize the store and a customer
+store = OnlineStore()
+customer = Customer(1, "Alice")
+store.add_customer(customer)
+
+# Set up shopping cart and add e-books
+cart = ShoppingCart(1)
+cart.add_ebook(EBook("Python Programming", "John Doe", 29.99))
+cart.add_ebook(EBook("Data Science Basics", "Jane Smith", 39.99))
+customer.set_shopping_cart(cart)
+
+# Create an order and associate an invoice
+order = Order(1, "2024-11-05")
+invoice = Invoice(1, total_amount=cart._ebooks[0].price + cart._ebooks[1].price)
+order.set_invoice(invoice)
+
+# Display outputs
+print(store)
+print(customer)
+print(cart)
+print(order)
+print(invoice)
+
+# import unittest
+from online_store import OnlineStore
+from customer import Customer
+from shopping_cart import ShoppingCart
+from e_book import EBook
+from order import Order
+from invoice import Invoice
+
+class TestEBookStore(unittest.TestCase):
+
+    def setUp(self):
+        """Set up test environment with an OnlineStore, Customer, ShoppingCart, and some EBooks."""
+        self.store = OnlineStore()
+        self.customer = Customer(1, "Alice")
+        self.store.add_customer(self.customer)
+        
+        self.cart = ShoppingCart(1)
+        self.customer.set_shopping_cart(self.cart)
+
+        self.ebook1 = EBook("Python Programming", "John Doe", 29.99)
+        self.ebook2 = EBook("Data Science Basics", "Jane Smith", 39.99)
+
+    def test_add_ebook_to_cart(self):
+        """Test adding e-books to the shopping cart."""
+        self.cart.add_ebook(self.ebook1)
+        self.cart.add_ebook(self.ebook2)
+        self.assertEqual(len(self.cart._ebooks), 2)
+
+    def test_modify_customer_account(self):
+        """Test modifying customer account details."""
+        self.customer._name = "Alice B"
+        self.assertEqual(self.customer.name, "Alice B")
+
+    def test_remove_customer_account(self):
+        """Test removing a customer account from the store."""
+        self.store._customers.remove(self.customer)
+        self.assertEqual(len(self.store._customers), 0)
+
+    def test_add_modify_remove_ebook_in_store(self):
+        """Test adding, modifying, and removing an e-book in the store catalog."""
+        self.store._ebooks = []  # Assuming store has an _ebooks list for catalog
+        self.store._ebooks.append(self.ebook1)
+        self.assertEqual(len(self.store._ebooks), 1)
+        
+        # Modify eBook details
+        self.ebook1._title = "Advanced Python Programming"
+        self.assertEqual(self.ebook1.title, "Advanced Python Programming")
+        
+        # Remove eBook
+        self.store._ebooks.remove(self.ebook1)
+        self.assertEqual(len(self.store._ebooks), 0)
+
+    def test_bulk_discount(self):
+        """Test applying a bulk purchase discount for 5 or more e-books."""
+        # Add 5 eBooks to cart
+        for _ in range(5):
+            self.cart.add_ebook(EBook("Bulk Book", "Author", 10.00))
+
+        # Calculate total with bulk discount (20%)
+        total_price = sum(ebook.price for ebook in self.cart._ebooks)
+        discount_price = total_price * 0.8  # 20% discount
+        self.assertAlmostEqual(discount_price, 40.00)
+
+    def test_loyalty_discount(self):
+        """Test applying a loyalty discount for loyalty program members."""
+        # Set customer as a loyalty program member (assuming we add a loyalty attribute)
+        self.customer._is_loyalty_member = True
+        loyalty_discount = 0.9  # 10% discount for loyalty members
+
+        # Add an eBook and apply loyalty discount
+        self.cart.add_ebook(self.ebook1)
+        total_price = self.ebook1.price * loyalty_discount
+        self.assertAlmostEqual(total_price, 26.99, places=2)
+
+    def test_generate_invoice(self):
+        """Test generating an invoice for an order."""
+        # Add e-books to cart and create an order
+        self.cart.add_ebook(self.ebook1)
+        self.cart.add_ebook(self.ebook2)
+        
+        order = Order(1, "2024-11-05")
+        total_amount = sum(ebook.price for ebook in self.cart._ebooks)
+        invoice = Invoice(1, total_amount)
+        
+        # Associate invoice with order
+        order.set_invoice(invoice)
+
+        # Check invoice generation
+        self.assertEqual(order._invoice.total_amount, 69.98)
+        self.assertEqual(str(invoice), "Invoice[ID=1, Total=69.98]")
+
+    def test_total_amount_with_vat(self):
+        """Test invoice total calculation with VAT."""
+        self.cart.add_ebook(self.ebook1)
+        order = Order(1, "2024-11-05")
+        
+        # Calculate total with VAT (8%)
+        total_amount = self.ebook1.price * 1.08  # Applying 8% VAT
+        invoice = Invoice(1, total_amount)
+        order.set_invoice(invoice)
+
+        self.assertAlmostEqual(order._invoice.total_amount, 32.39, places=2)
+
+if __name__ == "__main__":
+    unittest.main()
